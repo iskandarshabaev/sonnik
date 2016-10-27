@@ -32,7 +32,11 @@ public class ResultHolder extends RecyclerView.ViewHolder {
 
     public void bind(Article result) {
         mTextTV.setText(result.getTitle());
-        mDateTV.setText(result.getDate() == null ? "" : dateFormat.format(result.getDate()));
+        if (result.getDate() == null) {
+            mDateTV.setVisibility(View.GONE);
+        } else {
+            mDateTV.setText(dateFormat.format(result.getDate()));
+        }
     }
 
     public View getRootView() {

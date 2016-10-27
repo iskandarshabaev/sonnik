@@ -23,4 +23,10 @@ public interface Api {
     @GET("articles/{id}.html")
     Observable<Response<ResponseBody>> article(@Path("id") String id);
 
+    @GET("/")
+    Observable<Response<ResponseBody>> categories();
+
+    @GET("themes/theme{id}.html")
+    Observable<Response<ResponseBody>> category(@Path("id") String id);
+
 }

@@ -21,6 +21,10 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
         mResults = results;
     }
 
+    public List<Article> getResults() {
+        return mResults;
+    }
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
     }
@@ -33,6 +37,15 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
 
     public void changeDataSet(@NonNull List<Article> results) {
         mResults.clear();
+        mResults.addAll(results);
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        mResults.clear();
+    }
+
+    public void addResults(@NonNull List<Article> results) {
         mResults.addAll(results);
         notifyDataSetChanged();
     }

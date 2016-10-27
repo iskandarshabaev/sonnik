@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.ishabaev.sonnik.api.ApiFactory;
 import com.ishabaev.sonnik.model.Article;
+import com.ishabaev.sonnik.model.Category;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.realm.Realm;
+import io.realm.Sort;
 import rx.Observable;
 
 import static com.ishabaev.sonnik.api.Api.COF;
@@ -20,6 +22,69 @@ import static com.ishabaev.sonnik.api.Api.CX;
 import static com.ishabaev.sonnik.api.Api.IE;
 
 public class DefaultSonnikRepository implements SonnikRepository {
+
+    @Override
+    public Observable<List<Article>> getCategory(String id) {
+        return ApiFactory.getApi().category(id + "_0")
+                .flatMap(response ->
+                        Observable.fromCallable(() -> parseCategory(response.body().string())))
+                .flatMap(categories -> Observable.merge(gefdsfs(categories)))
+                .flatMap(Observable::from)
+                .toList()
+                .flatMap(articles -> Observable.fromCallable(() -> saveAndLoadArticles(articles)));
+    }
+
+    private List<Observable<List<Article>>> gefdsfs(List<String> categoryIds) {
+        List<Observable<List<Article>>> categories = new ArrayList<>();
+        for (String category : categoryIds) {
+            categories.add(getArticlesFromCategory(category));
+        }
+        return categories;
+    }
+
+    private Observable<List<Article>> getArticlesFromCategory(String id) {
+        return ApiFactory.getApi().category(id)
+                .flatMap(response ->
+                        Observable.fromCallable(() -> parseSearchResults(response.body().string())));
+    }
+
+    private List<String> parseCategory(String html) {
+        List<String> categories = new ArrayList<>();
+        Pattern titleFinder = Pattern.compile("<li.*?><a href=\"/themes/theme(.*?).html\">.*?</a></li>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        Matcher regexMatcher = titleFinder.matcher(html);
+        while (regexMatcher.find()) {
+            categories.add(regexMatcher.group(1));
+        }
+        return categories;
+    }
+
+    @Override
+    public Observable<List<Category>> getCategories() {
+        return Observable.fromCallable(this::getOfflineCategories)
+                .onErrorResumeNext(throwable -> {
+                    return ApiFactory.getApi().categories()
+                            .flatMap(response ->
+                                    Observable.fromCallable(() ->
+                                            parseCategories(response.body().string())));
+                });
+    }
+
+    private List<Category> getOfflineCategories() {
+        List<Category> categories = Realm.getDefaultInstance().where(Category.class)
+                .findAll();
+        return Realm.getDefaultInstance().copyFromRealm(categories);
+    }
+
+    private List<Category> parseCategories(String html) {
+        List<Category> categories = new ArrayList<>();
+        Pattern cateoryPattern = Pattern.compile("<option value=\"(.*?)\">(.*?)</option>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        Matcher regexMatcher = cateoryPattern.matcher(html);
+        while (regexMatcher.find()) {
+            Category category = new Category(regexMatcher.group(1), regexMatcher.group(2));
+            categories.add(category);
+        }
+        return categories;
+    }
 
     @Override
     public Observable<List<Article>> searchArticle(String query) {
@@ -39,10 +104,10 @@ public class DefaultSonnikRepository implements SonnikRepository {
 
             if (localArticle != null) {
                 localArticle = Realm.getDefaultInstance().copyFromRealm(localArticle);
-                if(localArticle.getDate() != null){
+                if (localArticle.getDate() != null) {
                     articles.set(i, localArticle);
                 }
-            }else {
+            } else {
                 Realm.getDefaultInstance().executeTransaction(realm -> realm.insertOrUpdate(article));
             }
         }
@@ -107,5 +172,14 @@ public class DefaultSonnikRepository implements SonnikRepository {
         article.setDate(new Date(System.currentTimeMillis()));
 
         return article;
+    }
+
+    @Override
+    public Observable<List<Article>> loadRecentArticles() {
+        List<Article> articles = Realm.getDefaultInstance().where(Article.class)
+                .isNotNull("mDate")
+                .findAll()
+                .sort("mDate", Sort.DESCENDING);
+        return Observable.fromCallable(() -> Realm.getDefaultInstance().copyFromRealm(articles));
     }
 }

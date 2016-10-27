@@ -24,7 +24,7 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
 
     public static DetailsFragment newInstance(@NonNull Article result) {
         Bundle args = new Bundle();
-        args.putSerializable(SEARCH_RESULT_KEY, result);
+        args.putParcelable(SEARCH_RESULT_KEY, result);
         DetailsFragment fragment = new DetailsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -36,7 +36,7 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         findViews(view);
         initPresenter();
-        Article result = (Article) getArguments().getSerializable(SEARCH_RESULT_KEY);
+        Article result = getArguments().getParcelable(SEARCH_RESULT_KEY);
         if (result != null) {
             loadContent(result);
         }

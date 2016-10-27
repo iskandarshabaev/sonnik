@@ -11,7 +11,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_layout_height"
+        android:layout_height="wrap_content"
         android:background="#ffffff"
         android:fitsSystemWindows="true">
 
@@ -27,33 +27,40 @@
             tools:ignore="InconsistentLayout">
 
             <LinearLayout
-                app:layout_collapseMode="parallax"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/padding_medium"
+                app:layout_collapseMode="parallax">
 
                 <TextView
-                    android:textSize="@dimen/text.16"
-                    android:padding="@dimen/margin_medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="@string/title"/>
+                    android:padding="@dimen/margin_medium"
+                    android:text="@string/title"
+                    android:textSize="@dimen/text.16"/>
 
                 <EditText
                     android:id="@+id/key"
-                    android:textSize="@dimen/text.16"
-                    android:layout_margin="@dimen/margin_medium"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"/>
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/margin_medium"
+                    android:textSize="@dimen/text.16"/>
+
+                <Spinner
+                    android:id="@+id/category"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/search"
-                    android:layout_margin="@dimen/margin_medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/margin_medium"
                     android:text="@string/search"/>
 
             </LinearLayout>

@@ -17,12 +17,36 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
+    public void init() {
+        mRepository.getCategories()
+                .compose(RxSchedulers.async())
+                .subscribe(
+                        results -> {
+                            mView.initCategorySpinner(results);
+                        }, this::showError
+                );
+    }
+
+    @Override
     public void search(String query) {
         mRepository.searchArticle(query)
                 .compose(RxSchedulers.async())
                 .subscribe(response -> {
                     mView.showResults(response);
                 }, this::showError);
+    }
+
+    @Override
+    public void category(String query) {
+        mRepository.getCategory(query)
+                .compose(RxSchedulers.async())
+                .subscribe(mView::addResults, this::showError);
+    }
+
+    @Override
+    public void loadRecentArticles() {
+        mRepository.loadRecentArticles()
+                .subscribe(mView::showResults, this::showError);
     }
 
     private void showError(Throwable throwable) {
