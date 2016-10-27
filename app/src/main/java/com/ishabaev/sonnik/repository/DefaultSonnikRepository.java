@@ -26,7 +26,27 @@ public class DefaultSonnikRepository implements SonnikRepository {
         return ApiFactory.getApi().search(query, IE, COF, query, CX)
                 .flatMap(response ->
                         Observable.fromCallable(() -> parseSearchResults(response.body().string())))
-                .doOnNext(articles -> Realm.getDefaultInstance().executeTransaction(realm -> realm.insert(articles)));
+                .flatMap(articles -> Observable.just(saveAndLoadArticles(articles)));
+    }
+
+    private List<Article> saveAndLoadArticles(List<Article> articles) {
+        for (int i = 0; i < articles.size(); i++) {
+            Article article = articles.get(i);
+            Article localArticle = Realm.getDefaultInstance()
+                    .where(Article.class)
+                    .equalTo("mId", article.getId())
+                    .findFirst();
+
+            if (localArticle != null) {
+                localArticle = Realm.getDefaultInstance().copyFromRealm(localArticle);
+                if(localArticle.getDate() != null){
+                    articles.set(i, localArticle);
+                }
+            }else {
+                Realm.getDefaultInstance().executeTransaction(realm -> realm.insertOrUpdate(article));
+            }
+        }
+        return articles;
     }
 
     private List<Article> parseSearchResults(String html) {
@@ -47,18 +67,24 @@ public class DefaultSonnikRepository implements SonnikRepository {
                     return ApiFactory.getApi().article(id)
                             .flatMap(response ->
                                     Observable.fromCallable(() -> parseArticle(id, response.body().string())))
-                            .doOnNext(article -> Realm.getDefaultInstance().executeTransaction(realm -> realm.insertOrUpdate(article)));
+                            .doOnNext(article -> Realm.getDefaultInstance()
+                                    .executeTransaction(realm -> realm.insertOrUpdate(article)));
 
                 });
 
     }
 
-    private Article loadArticleLocal(String id) {
+    private Article loadArticleLocal(String id) throws Exception {
         Article article = Realm.getDefaultInstance()
                 .where(Article.class)
                 .equalTo("mId", id)
                 .findFirst();
-        return Realm.getDefaultInstance().copyFromRealm(article);
+
+        if (article.getText() != null) {
+            return Realm.getDefaultInstance().copyFromRealm(article);
+        } else {
+            throw new Exception("");
+        }
     }
 
     private Article parseArticle(@NonNull String id, @NonNull String html) {
@@ -77,6 +103,8 @@ public class DefaultSonnikRepository implements SonnikRepository {
         while (regexMatcher.find()) {
             article.setText(regexMatcher.group(1));
         }
+
+        article.setDate(new Date(System.currentTimeMillis()));
 
         return article;
     }

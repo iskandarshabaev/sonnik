@@ -8,10 +8,16 @@ import android.widget.TextView;
 import com.ishabaev.sonnik.R;
 import com.ishabaev.sonnik.model.Article;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class ResultHolder extends RecyclerView.ViewHolder {
 
     private View mRootView;
     private TextView mTextTV;
+    private TextView mDateTV;
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
     public ResultHolder(View view) {
         super(view);
@@ -21,10 +27,12 @@ public class ResultHolder extends RecyclerView.ViewHolder {
 
     private void findViews(View view) {
         mTextTV = (TextView) view.findViewById(R.id.text);
+        mDateTV = (TextView) view.findViewById(R.id.date);
     }
 
     public void bind(Article result) {
         mTextTV.setText(result.getTitle());
+        mDateTV.setText(result.getDate() == null ? "" : dateFormat.format(result.getDate()));
     }
 
     public View getRootView() {

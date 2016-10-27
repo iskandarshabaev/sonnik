@@ -7,10 +7,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Article extends RealmObject implements Serializable {
 
+    @PrimaryKey
     private String mId;
+
     private String mTitle;
     private String mText;
     private Date mDate;
