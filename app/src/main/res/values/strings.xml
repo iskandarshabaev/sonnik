@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">sonnik</string>
+    <string name="title">Что вам приснилось?</string>
+    <string name="search">Искать</string>
+</resources>
