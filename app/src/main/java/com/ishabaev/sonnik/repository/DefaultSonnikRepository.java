@@ -143,10 +143,12 @@ public class DefaultSonnikRepository implements SonnikRepository {
                 .onErrorResumeNext(error -> {
                     return ApiFactory.getApi().article(id)
                             .flatMap(response ->
-                                    Observable.fromCallable(() -> parseArticle(id, response.body().string())))
-                            .doOnNext(article -> Realm.getDefaultInstance()
-                                    .executeTransaction(realm -> realm.insertOrUpdate(article)));
-
+                                    Observable.fromCallable(() -> parseArticle(id, response.body().string())));
+                })
+                .doOnNext(article -> {
+                    article.setDate(new Date(System.currentTimeMillis()));
+                    Realm.getDefaultInstance()
+                            .executeTransaction(realm -> realm.insertOrUpdate(article));
                 });
 
     }

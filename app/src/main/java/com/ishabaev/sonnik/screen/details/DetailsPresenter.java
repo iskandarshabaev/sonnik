@@ -32,13 +32,19 @@ public class DetailsPresenter implements DetailsContract.Presenter {
 
     @Override
     public void load(String article) {
+        mView.setProgressVisibility(true);
         mRepository.getArticle(article)
                 .compose(RxSchedulers.async())
-                .subscribe(mView::showContent, Throwable::printStackTrace);
+                .subscribe(result -> {
+                            mView.setProgressVisibility(false);
+                            mView.showContent(result);
+                        }, Throwable::printStackTrace
+                );
     }
 
     private void showError(Throwable throwable) {
         throwable.printStackTrace();
+        mView.setProgressVisibility(false);
         if (throwable instanceof UnknownHostException) {
             mView.showNoInternetError();
         } else {

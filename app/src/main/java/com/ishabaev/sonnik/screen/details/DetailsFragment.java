@@ -9,6 +9,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
     private DetailsContract.Presenter mPresenter;
     private ImageView mMenuIV;
     private CategoryMenuAdapter mCategoryMenuAdapter;
+    private FrameLayout mProgress;
 
     public static DetailsFragment newInstance(@NonNull Article result) {
         Bundle args = new Bundle();
@@ -63,6 +65,7 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
         mContentTV = (TextView) view.findViewById(R.id.content);
         mTitleTV = (TextView) view.findViewById(R.id.title);
         mMenuIV = (ImageView) view.findViewById(R.id.menu);
+        mProgress = (FrameLayout) view.findViewById(R.id.progress);
     }
 
     private void initToolbarButtons() {
@@ -118,5 +121,10 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
     @Override
     public void showSomethingWrong() {
         Navigator.showError(getActivity(), getString(R.string.something_wrong));
+    }
+
+    @Override
+    public void setProgressVisibility(boolean visible) {
+        mProgress.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -50,6 +51,7 @@ public class MainFragment extends Fragment implements MainContract.View {
     private CategoryAdapter mCategoryAdapter;
     private CategoryMenuAdapter mCategoryMenuAdapter;
     private String mCategory;
+    private FrameLayout mProgress;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -95,6 +97,7 @@ public class MainFragment extends Fragment implements MainContract.View {
         mMenuIV = (ImageView) view.findViewById(R.id.menu);
         mBackIV = (ImageView) view.findViewById(R.id.back);
         mTitleTV = (TextView) view.findViewById(R.id.title);
+        mProgress = (FrameLayout) view.findViewById(R.id.progress);
     }
 
     private void initToolbarButtons(Bundle savedInstanceState) {
@@ -259,5 +262,10 @@ public class MainFragment extends Fragment implements MainContract.View {
     @Override
     public void showDetails(@NonNull Article article) {
         Navigator.showDetailsFragment(getActivity(), article);
+    }
+
+    @Override
+    public void setProgressVisibility(boolean visible) {
+        mProgress.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

@@ -27,6 +27,8 @@ public interface DetailsContract {
         void showNoInternetError();
 
         void showSomethingWrong();
+
+        void setProgressVisibility(boolean visible);
     }
 
 }

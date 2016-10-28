@@ -39,6 +39,8 @@ public interface MainContract {
         void showSomethingWrong();
 
         void showDetails(@NonNull Article article);
+
+        void setProgressVisibility(boolean visible);
     }
 
 }

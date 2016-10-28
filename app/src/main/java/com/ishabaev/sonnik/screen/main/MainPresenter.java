@@ -37,6 +37,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void search(String query) {
+        mView.setProgressVisibility(true);
         mRepository.searchArticle(query)
                 .flatMap(response -> {
                     if (response.raw().request().url().toString().contains("articles")) {
@@ -49,6 +50,7 @@ public class MainPresenter implements MainContract.Presenter {
                 })
                 .compose(RxSchedulers.async())
                 .subscribe(response -> {
+                    mView.setProgressVisibility(false);
                     if (response instanceof List) {
                         if (((List) response).size() > 0) {
                             mView.showResults(((List<Article>) response));
@@ -73,9 +75,13 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void category(String query) {
+        mView.setProgressVisibility(true);
         mRepository.getCategory(query)
                 .compose(RxSchedulers.async())
-                .subscribe(mView::addResults, this::showError);
+                .subscribe(result -> {
+                    mView.setProgressVisibility(false);
+                    mView.addResults(result);
+                }, this::showError);
     }
 
     @Override
@@ -86,6 +92,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     private void showError(Throwable throwable) {
         throwable.printStackTrace();
+        mView.setProgressVisibility(false);
         if (throwable instanceof UnknownHostException) {
             mView.showNoInternetError();
         } else {
