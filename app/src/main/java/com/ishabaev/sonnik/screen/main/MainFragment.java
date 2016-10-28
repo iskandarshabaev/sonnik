@@ -191,7 +191,7 @@ public class MainFragment extends Fragment implements MainContract.View {
         RecyclerView.ItemAnimator animator = new DefaultItemAnimator();
         mResultAdapter = new ResultAdapter(new ArrayList<>());
         mResultAdapter.setOnItemClickListener((v, result) -> {
-            Navigator.showDetailsFragment(getActivity(), result);
+            showDetails(result);
         });
         mResultsRV.setLayoutManager(layoutManager);
         mResultsRV.setItemAnimator(animator);
@@ -251,4 +251,13 @@ public class MainFragment extends Fragment implements MainContract.View {
         Navigator.showError(getActivity(), getString(R.string.something_wrong));
     }
 
+    @Override
+    public void notFoundError() {
+        Navigator.showError(getActivity(), getString(R.string.not_found));
+    }
+
+    @Override
+    public void showDetails(@NonNull Article article) {
+        Navigator.showDetailsFragment(getActivity(), article);
+    }
 }

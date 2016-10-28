@@ -5,12 +5,10 @@
     <string name="home">На главный экран</string>
     <string name="results">Результаты</string>
     <string name="recent_results">Раньше Вам снилось</string>
-
     <string name="viewed">Вы смотрели это %s</string>
-
     <string name="error">Ошибка</string>
-
     <string name="no_internet">Нет интернета</string>
     <string name="something_wrong">Что то пошло не так</string>
+    <string name="not_found">Ничего не найдено</string>
     <string name="back">Назад</string>
 </resources>

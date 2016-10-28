@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 import io.realm.Realm;
 import io.realm.Sort;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import rx.Observable;
 
 import static com.ishabaev.sonnik.api.Api.COF;
@@ -28,13 +30,13 @@ public class DefaultSonnikRepository implements SonnikRepository {
         return ApiFactory.getApi().category(id + "_0")
                 .flatMap(response ->
                         Observable.fromCallable(() -> parseCategory(response.body().string())))
-                .flatMap(categories -> Observable.merge(gefdsfs(categories)))
+                .flatMap(categories -> Observable.merge(makeCategoryList(categories)))
                 .flatMap(Observable::from)
                 .toList()
                 .flatMap(articles -> Observable.fromCallable(() -> saveAndLoadArticles(articles)));
     }
 
-    private List<Observable<List<Article>>> gefdsfs(List<String> categoryIds) {
+    private List<Observable<List<Article>>> makeCategoryList(List<String> categoryIds) {
         List<Observable<List<Article>>> categories = new ArrayList<>();
         for (String category : categoryIds) {
             categories.add(getArticlesFromCategory(category));
@@ -98,14 +100,12 @@ public class DefaultSonnikRepository implements SonnikRepository {
     }
 
     @Override
-    public Observable<List<Article>> searchArticle(String query) {
-        return ApiFactory.getApi().search(query, IE, COF, query, CX)
-                .flatMap(response ->
-                        Observable.fromCallable(() -> parseSearchResults(response.body().string())))
-                .flatMap(articles -> Observable.just(saveAndLoadArticles(articles)));
+    public Observable<Response<ResponseBody>> searchArticle(String query) {
+        return ApiFactory.getApi().search(query, IE, COF, query, CX);
     }
 
-    private List<Article> saveAndLoadArticles(List<Article> articles) {
+    @Override
+    public List<Article> saveAndLoadArticles(List<Article> articles) {
         for (int i = 0; i < articles.size(); i++) {
             Article article = articles.get(i);
             Article localArticle = Realm.getDefaultInstance()
@@ -125,7 +125,8 @@ public class DefaultSonnikRepository implements SonnikRepository {
         return articles;
     }
 
-    private List<Article> parseSearchResults(String html) {
+    @Override
+    public List<Article> parseSearchResults(String html) {
         List<Article> results = new ArrayList<>();
         Pattern titleFinder = Pattern.compile("<a[^>]*?href\\s*=\\s*(('|\")(/articles/(.*?).html)('|\"))[^>]*?(?!/)>(.*?)</a>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
         Matcher regexMatcher = titleFinder.matcher(html);

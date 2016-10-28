@@ -32,9 +32,13 @@ public interface MainContract {
 
         void initCategorySpinner(List<Category> categories);
 
+        void notFoundError();
+
         void showNoInternetError();
 
         void showSomethingWrong();
+
+        void showDetails(@NonNull Article article);
     }
 
 }
