@@ -4,10 +4,13 @@ package com.ishabaev.sonnik.model;
 import android.support.annotation.NonNull;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Category extends RealmObject {
 
+    @PrimaryKey
     private String mId;
+
     private String mName;
 
     public Category() {

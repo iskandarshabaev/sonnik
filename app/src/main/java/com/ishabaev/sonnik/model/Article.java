@@ -43,7 +43,9 @@ public class Article extends RealmObject implements Parcelable {
         mId = in.readString();
         mTitle = in.readString();
         mText = in.readString();
-        mDate = new Date(in.readLong());
+
+        long time = in.readLong();
+        mDate = time == 0 ? null : new Date(time);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class Article extends RealmObject implements Parcelable {
         parcel.writeString(mId);
         parcel.writeString(mTitle);
         parcel.writeString(mText);
-        parcel.writeLong(mDate.getTime());
+        parcel.writeLong(mDate == null ? 0 : mDate.getTime());
 
     }
 

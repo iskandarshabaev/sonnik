@@ -1,6 +1,7 @@
 package com.ishabaev.sonnik.screen.main;
 
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -35,7 +36,10 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         if (result.getDate() == null) {
             mDateTV.setVisibility(View.GONE);
         } else {
-            mDateTV.setText(dateFormat.format(result.getDate()));
+            mDateTV.setVisibility(View.VISIBLE);
+            Resources res = mDateTV.getResources();
+            String text = res.getString(R.string.viewed, dateFormat.format(result.getDate()));
+            mDateTV.setText(text);
         }
     }
 

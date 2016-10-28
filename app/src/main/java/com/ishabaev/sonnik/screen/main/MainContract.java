@@ -24,11 +24,17 @@ public interface MainContract {
 
     interface View {
 
+        void showRecentResults(@NonNull List<Article> results);
+
         void showResults(@NonNull List<Article> results);
 
         void addResults(@NonNull List<Article> results);
 
         void initCategorySpinner(List<Category> categories);
+
+        void showNoInternetError();
+
+        void showSomethingWrong();
     }
 
 }

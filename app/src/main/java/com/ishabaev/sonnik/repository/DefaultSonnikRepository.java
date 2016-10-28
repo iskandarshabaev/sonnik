@@ -61,12 +61,23 @@ public class DefaultSonnikRepository implements SonnikRepository {
     @Override
     public Observable<List<Category>> getCategories() {
         return Observable.fromCallable(this::getOfflineCategories)
-                .onErrorResumeNext(throwable -> {
-                    return ApiFactory.getApi().categories()
-                            .flatMap(response ->
-                                    Observable.fromCallable(() ->
-                                            parseCategories(response.body().string())));
+                .flatMap(categories -> {
+                    if (categories.size() == 0) {
+                        return getCategoriesRemote();
+                    } else {
+                        return Observable.just(categories);
+                    }
                 });
+    }
+
+    private Observable<List<Category>> getCategoriesRemote() {
+        return ApiFactory.getApi().categories()
+                .flatMap(response ->
+                        Observable.fromCallable(() ->
+                                parseCategories(response.body().string())))
+                .doOnNext(categories -> Realm.getDefaultInstance().executeTransaction(realm -> {
+                    realm.insertOrUpdate(categories);
+                }));
     }
 
     private List<Category> getOfflineCategories() {

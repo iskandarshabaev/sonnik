@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import com.ishabaev.sonnik.repository.SonnikRepository;
 import com.ishabaev.sonnik.util.RxSchedulers;
 
+import java.net.UnknownHostException;
+
 public class MainPresenter implements MainContract.Presenter {
 
     private MainContract.View mView;
@@ -46,10 +48,15 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void loadRecentArticles() {
         mRepository.loadRecentArticles()
-                .subscribe(mView::showResults, this::showError);
+                .subscribe(mView::showRecentResults, this::showError);
     }
 
     private void showError(Throwable throwable) {
         throwable.printStackTrace();
+        if (throwable instanceof UnknownHostException) {
+            mView.showNoInternetError();
+        } else {
+            mView.showSomethingWrong();
+        }
     }
 }

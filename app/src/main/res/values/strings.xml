@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">sonnik</string>
-    <string name="title">Что вам приснилось?</string>
+    <string name="title">Что Вам приснилось?</string>
     <string name="search">Искать</string>
+    <string name="home">На главный экран</string>
+    <string name="results">Результаты</string>
+    <string name="recent_results">Раньше Вам снилось</string>
+
+    <string name="viewed">Вы смотрели это %s</string>
+
+    <string name="error">Ошибка</string>
+
+    <string name="no_internet">Нет интернета</string>
+    <string name="something_wrong">Что то пошло не так</string>
+    <string name="back">Назад</string>
 </resources>
